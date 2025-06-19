@@ -1,0 +1,59 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: postgres-leave
+    ports:
+      - "6562:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: leave_management
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
+
+  backend:
+    build: ./Backend
+    container_name: backend-leave
+    ports:
+      - "3004:3004"
+    depends_on:
+      - postgres
+    environment:
+      DB_USER: postgres
+      DB_PASSWORD: admin123
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: leave_management
+      PORT: 3004
+    restart: unless-stopped
+
+  employee-leave:
+    build: ./Employee-leave
+    container_name: Employee-leave
+    ports:
+      - "8062:80"
+    depends_on:
+      - backend
+    environment:
+      REACT_APP_API_URL: http://backend:3004
+    restart: unless-stopped
+
+  hr-leave:
+    build: ./HR-leave
+    container_name: HR-leave
+    ports:
+      - "8063:80"
+    depends_on:
+      - backend
+    environment:
+      REACT_APP_API_URL: http://backend:3004
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+
+
