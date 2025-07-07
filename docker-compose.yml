@@ -5,7 +5,7 @@ services:
     image: postgres:16
     container_name: postgres-leave
     ports:
-      - "6562:5432"
+      - "5202:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: admin123
@@ -19,7 +19,7 @@ services:
     build: ./Backend
     container_name: backend-leave
     ports:
-      - "3004:3004"
+      - "3202:3202"
     depends_on:
       - postgres
     environment:
@@ -28,29 +28,29 @@ services:
       DB_HOST: postgres
       DB_PORT: 5432
       DB_NAME: leave_management
-      PORT: 3004
+      PORT: 3202
     restart: unless-stopped
 
   employee-leave:
     build: ./Employee-leave
     container_name: Employee-leave
     ports:
-      - "8062:80"
+      - "8004:80"
     depends_on:
       - backend
     environment:
-      REACT_APP_API_URL: http://backend:3004
+      REACT_APP_API_URL: http://backend:3202
     restart: unless-stopped
 
   hr-leave:
     build: ./HR-leave
     container_name: HR-leave
     ports:
-      - "8063:80"
+      - "8005:80"
     depends_on:
       - backend
     environment:
-      REACT_APP_API_URL: http://backend:3004
+      REACT_APP_API_URL: http://backend:3202
     restart: unless-stopped
 
 volumes:
